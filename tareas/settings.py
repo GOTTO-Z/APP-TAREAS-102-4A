@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'tareas.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tareasdb',
+        'NAME': 'tareasdb2',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
