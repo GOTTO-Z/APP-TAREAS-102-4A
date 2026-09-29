@@ -49,3 +49,14 @@ def editar_tarea(request, id):
     return render(request, 'tareasapp/editar.html', {
         'tarea': tarea
     })
+
+def eliminar_tarea(request, id):
+    tarea = Tarea.objects.get(id=id)
+
+    if request.method == 'POST':
+        tarea.delete()
+        return redirect('inicio')
+
+    return render(request, 'tareasapp/eliminar.html', {
+        'tarea': tarea
+    } )
