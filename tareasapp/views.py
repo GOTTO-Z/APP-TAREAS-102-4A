@@ -1,6 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Tarea
+from django.contrib.auth import authenticate
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.authtoken.models import Token
 # Create your views here.
 
 # def inicio(request):
@@ -60,3 +67,40 @@ def eliminar_tarea(request, id):
     return render(request, 'tareasapp/eliminar.html', {
         'tarea' : tarea
     })
+
+def loguin_pagina(request):
+    return render(request, 'tareasapp/login.html')
+
+class LoginApiView(APIView):
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        #Recibir las credenciales del Json del html
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        #Validar credenciales
+
+        usuario = authenticate(
+            username = username
+            password = password
+        )
+
+        #Si el usuario y la contrasena son correctas
+
+        if usuario is not None:
+
+            Token, creado = Token.objects.get_or_create(
+                user=usuario
+            )
+
+            return Response({
+                'mensaje':'Autenticacion Correcta',
+                'usuario':usuario.username,
+                'token':token.key
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            'error'; 'Usuario o Contraseña incorrecta'
+        }, status=status.HTTP_401_UNAUTHORIZED)
