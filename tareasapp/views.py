@@ -131,3 +131,40 @@ class TareasApiView(APIView):
         return Response(datos, status=status.HTTP_200_OK)
 
 
+    #POST Crear una nueva tarea
+
+    def post(self, request):
+
+        #Recibir los datos enviados desde el cliente
+
+        titulo = request.data.get('titulo')
+        descripcion= request.data.get('descripcion')
+        completada = request.data.get('completada', False)
+
+        #Validar que los campos obligatorios tengan datos
+
+        if not titulo or not descripcion:
+            return Response({
+                'error': 'El titulo y la descripcion son obligatorios'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+        #Crear y guardar la tarea en la BD
+
+        tarea = Tarea.objects.create(
+            titulo=titulo,
+            descripcion=descripcion,
+            completada=completada
+        )
+
+        # devolver la tarea completada
+
+        return Response({
+            'mensaje': 'Tarea creada correctamente',
+            'tarea':{
+                'id':tarea.id,
+                'titulo': tarea.titulo,
+                'descripcion': tarea.descripcion,
+                'completada': tarea.completada
+            }
+        }, status=status.HTTP_201_CREATED)
