@@ -1,107 +1,270 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.contrib.auth import authenticate
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import AllowAny
-from rest_framework.authtoken.models import Token
-from .models import Tarea
-# Create your views here.
+<!DOCTYPE html>
+<html lang="es">
 
-# def inicio(request):
-#     return HttpResponse("Hola, esta es mi App de Tareas")
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión</title>
 
-def inicio(request):
-    tareas = Tarea.objects.all()
+    <style>
+        /* ESTILOS GENERALES */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    return render(request, 'tareasapp/inicio.html', {
-        'tareas': tareas
-    }) 
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #1e293b;
 
-def crear_tarea(request):
-    if request.method == 'POST':
-        titulo = request.POST['titulo']
-        descripcion = request.POST['descripcion']
-        completada = 'completa' in request.POST
+            background: linear-gradient(
+                135deg,
+                #dbeafe 0%,
+                #eff6ff 50%,
+                #bfdbfe 100%
+            );
+        }
 
-        Tarea.objects.create(
-            titulo = titulo,
-            descripcion= descripcion,
-            completada = completada
-        )
-        return redirect('inicio')
-    return render(request, 'tareasapp/crear.html')
+        /* TARJETA DE INICIO DE SESIÓN */
+        .contenedor-login {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 35px;
+            background-color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.12);
+        }
 
-def detalle_tarea(request, id):
-    tarea = Tarea.objects.get(id=id)
+        /* TÍTULO Y DESCRIPCIÓN */
+        h1 {
+            margin-bottom: 10px;
+            color: #1d4ed8;
+            font-size: 30px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
 
-    return render(request, 'tareasapp/detalle.html', {
-        'tarea': tarea
-    })
+        .subtitulo {
+            margin-bottom: 25px;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: center;
+        }
 
-def editar_tarea(request, id):
-    tarea = Tarea.objects.get(id=id)
+        /* FORMULARIO */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-    if request.method == 'POST':
-        tarea.titulo = request.POST['titulo']
-        tarea.descripcion = request.POST['descripcion']
-        tarea.completada = 'completada' in request.POST
+        label {
+            margin-top: 8px;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 600;
+        }
 
-        tarea.save()
+        input {
+            width: 100%;
+            padding: 13px 15px;
+            font-family: inherit;
+            font-size: 15px;
+            color: #1e293b;
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            outline: none;
 
-        return redirect('inicio')
+            transition: border-color 0.2s,
+                        box-shadow 0.2s,
+                        background-color 0.2s;
+        }
 
-    return render(request, 'tareasapp/editar.html', {
-        'tarea': tarea
-    })
+        input::placeholder {
+            color: #94a3b8;
+        }
 
-def eliminar_tarea(request, id):
-    tarea = Tarea.objects.get(id=id)
+        input:hover {
+            border-color: #93c5fd;
+        }
 
-    if request.method == 'POST':
-        tarea.delete()
-        return redirect('inicio')
+        input:focus {
+            background-color: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+        }
 
-    return render(request, 'tareasapp/eliminar.html', {
-        'tarea': tarea
-    } )
+        /* BOTÓN */
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
 
-def login_pagina(request):
-    return render(request, 'tareasapp/login.html')
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-class LoginApiView(APIView):
+        button:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+            transform: translateY(-2px);
+        }
 
-    permission_classes = [AllowAny]
+        button:active {
+            transform: translateY(0);
+        }
 
-    def post(self, request):
+        button:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 3px;
+        }
 
-        #recibir las crendenciales desde JSON
-        username = request.data.get('username')
-        password = request.data.get('password')
+        /* MENSAJES DE RESPUESTA */
+        #mensaje {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
 
-        # Validar credenciales
+        #mensaje:empty {
+            display: none;
+        }
 
-        usuario = authenticate(
-            username=username, 
-            password=password
-        )
+        #mensaje.exito {
+            color: #166534;
+            background-color: #dcfce7;
+            border: 1px solid #bbf7d0;
+        }
 
-        # Si el usuario y la constraseña son correctos
+        #mensaje.error {
+            color: #b91c1c;
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+        }
 
-        if usuario is not None:
+        /* DISEÑO PARA CELULARES */
+        @media (max-width: 480px) {
+            .contenedor-login {
+                padding: 30px 22px;
+                border-radius: 16px;
+            }
 
-            token, creado = Token.objects.get_or_create(
-                user=usuario
-            )
+            h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
 
-            return Response({
-                'mensaje':'Autenticacion Correcta',
-                'usuario':usuario.username,
-                'token':token.key
-            }, status=status.HTTP_200_OK)
+<body>
 
-        return Response({
-            'error': 'Usuario o contraseña incorrectos'
-        }, status=status.HTTP_401_UNAUTHORIZED)
+    <div class="contenedor-login">
+
+        <h1>Iniciar sesión</h1>
+
+        <p class="subtitulo">
+            Ingresa tus credenciales para continuar.
+        </p>
+
+        <form id="formLogin">
+
+            <label for="username">Usuario:</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Ingresa tu usuario"
+                autocomplete="username"
+                required
+            >
+
+            <label for="password">Contraseña:</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Ingresa tu contraseña"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit">Ingresar</button>
+
+        </form>
+
+        <p id="mensaje" role="status" aria-live="polite"></p>
+
+    </div>
+
+    <script>
+        const formulario = document.getElementById('formLogin');
+        const mensaje = document.getElementById('mensaje');
+
+        formulario.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            mensaje.textContent = '';
+            mensaje.className = '';
+
+            try {
+                const respuesta = await fetch('/api/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const datos = await respuesta.json();
+
+                if (respuesta.ok) {
+                    sessionStorage.setItem('token', datos.token);
+
+                    mensaje.textContent = 'Inicio de sesión correcto';
+                    mensaje.className = 'exito';
+
+                    window.location.href = '/tareas/';
+                } else {
+                    mensaje.textContent =
+                        datos.error || 'Error al iniciar sesión';
+
+                    mensaje.className = 'error';
+                }
+
+            } catch (error) {
+                mensaje.textContent =
+                    'No se pudo conectar con el servidor. Intenta nuevamente.';
+
+                mensaje.className = 'error';
+            }
+        });
+    </script>
+
+</body>
+</html>
