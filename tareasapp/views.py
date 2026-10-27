@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
 
@@ -168,3 +168,63 @@ class TareasApiView(APIView):
                 'completada': tarea.completada
             }
         }, status=status.HTTP_201_CREATED)
+
+
+
+class TareaDetalleApiView(APIView):
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    # GET consultar por tarea ID
+
+    def get(self, request, id):
+
+        tarea = get_object_or_404(Tarea, id=id)
+
+        return Response({
+            'id': tarea.id,
+            'titulo': tarea.titulo,
+            'completada': tarea.completada
+
+        }, status=status.HTTP_200_OK)
+    
+
+    # DELETE: eliminar una tarea
+
+    def delete(self, request, id):
+        tarea = get_object_or_404(Tarea, id=id)
+        tarea.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    #PUT : Actualizar una tarea - Todos los campos
+
+    def put (self, request, id):
+        tarea = get_object_or_404(Tarea, id=id)
+
+        titulo = request.data.get('titulo')
+        descripcion = request.data.get('descripcion')
+        completada = request.data.get('completada')
+
+        if titulo is None or descripcion is None or completada is None:
+            return Response({
+                'error': 'Debes enviar todos los campos'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not isinstance(titulo, str) or not titulo.strip():
+            return Response({
+                'error': 'El titulo es obligatorio'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        tarea.titulo = titulo
+        tarea.descripcion = descripcion
+        tarea.completada = completada
+        tarea.save()
+
+        return Response({
+            'mensaje': 'Tarea Actualizada correctamente',
+            'id': tarea.id,
+            'descripcion': tarea.descripcion,
+            'completada': tarea.completada
+        }, status=status.HTTP_200_OK)
