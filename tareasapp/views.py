@@ -31,6 +31,8 @@ def sesion_web_requerida(vista):
     Renueva el Access Token cuando expira.
     """
 
+    #Protege al HTML 
+    #Y no permite que nadie ingrese si no tiene una sección echa
     @wraps(vista)
     def funcion(request, *args, **kwargs):
 

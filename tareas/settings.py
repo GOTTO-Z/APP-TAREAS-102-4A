@@ -94,7 +94,8 @@ DATABASES = {
         "PORT": "3306",
     }
 }
-
+#User: Gotoh
+#Password: root123
 
 # =====================================================
 # VALIDACION DE CONTRASEÑAS
