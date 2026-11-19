@@ -136,6 +136,12 @@
             outline-offset: 3px;
         }
 
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         /* MENSAJES DE RESPUESTA */
         #mensaje {
             margin-top: 20px;
@@ -188,7 +194,10 @@
 
         <form id="formLogin">
 
+            {% csrf_token %}
+
             <label for="username">Usuario:</label>
+
             <input
                 type="text"
                 id="username"
@@ -199,6 +208,7 @@
             >
 
             <label for="password">Contraseña:</label>
+
             <input
                 type="password"
                 id="password"
@@ -208,7 +218,9 @@
                 required
             >
 
-            <button type="submit">Ingresar</button>
+            <button type="submit" id="btnIngresar">
+                Ingresar
+            </button>
 
         </form>
 
@@ -217,54 +229,120 @@
     </div>
 
     <script>
+
+        // ELEMENTOS DEL FORMULARIO
+
         const formulario = document.getElementById('formLogin');
+
         const mensaje = document.getElementById('mensaje');
 
+        const boton = document.getElementById('btnIngresar');
+
+
+        // OBTENER TOKEN CSRF
+
+        const csrfToken = document.querySelector(
+            '[name=csrfmiddlewaretoken]'
+        ).value;
+
+
+        // PROCESAR INICIO DE SESIÓN
+
         formulario.addEventListener('submit', async function(event) {
+
             event.preventDefault();
 
             const username = document.getElementById('username').value;
+
             const password = document.getElementById('password').value;
 
+
+            // LIMPIAR MENSAJES
+
             mensaje.textContent = '';
+
             mensaje.className = '';
 
+            boton.disabled = true;
+
+            boton.textContent = 'Validando...';
+
+
             try {
-                const respuesta = await fetch('/api/login/', {
+
+                // ENVIAR CREDENCIALES A DJANGO
+
+                const respuesta = await fetch('/web/login/', {
+
                     method: 'POST',
+
+                    credentials: 'same-origin',
+
                     headers: {
-                        'Content-Type': 'application/json'
+
+                        'Content-Type': 'application/json',
+
+                        'X-CSRFToken': csrfToken
+
                     },
+
                     body: JSON.stringify({
+
                         username: username,
+
                         password: password
+
                     })
+
                 });
+
 
                 const datos = await respuesta.json();
 
+
+                // VALIDAR RESPUESTA
+
                 if (respuesta.ok) {
-                    sessionStorage.setItem('token', datos.token);
 
                     mensaje.textContent = 'Inicio de sesión correcto';
+
                     mensaje.className = 'exito';
 
+
+                    // REDIRIGIR AL PANEL PRINCIPAL
+
                     window.location.href = '/tareas/';
+
+
                 } else {
+
                     mensaje.textContent =
                         datos.error || 'Error al iniciar sesión';
 
                     mensaje.className = 'error';
+
                 }
 
+
             } catch (error) {
+
                 mensaje.textContent =
                     'No se pudo conectar con el servidor. Intenta nuevamente.';
 
                 mensaje.className = 'error';
+
+            } finally {
+
+                boton.disabled = false;
+
+                boton.textContent = 'Ingresar';
+
             }
+
         });
+
     </script>
 
 </body>
+
 </html>

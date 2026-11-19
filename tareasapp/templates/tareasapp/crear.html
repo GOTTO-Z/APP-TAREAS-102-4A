@@ -1,109 +1,388 @@
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear tarea</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #1e293b;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff, #bfdbfe);
+        }
+
+        .navbar {
+            padding: 20px 6%;
+            background: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.10);
+        }
+
+        .navbar h2 {
+            color: #1d4ed8;
+        }
+
+        .contenedor {
+            width: 90%;
+            max-width: 650px;
+            margin: 55px auto;
+        }
+
+        .panel {
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.10);
+        }
+
+        h1 {
+            color: #1d4ed8;
+            margin-bottom: 10px;
+        }
+
+        .descripcion {
+            color: #64748b;
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        .campo {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #eff6ff;
+            font-family: inherit;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            outline: 2px solid #93c5fd;
+            border-color: #2563eb;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox input {
+            width: 17px;
+            height: 17px;
+        }
+
+        .checkbox label {
+            margin: 0;
+        }
+
+        .botones {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        button, .btn {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-guardar {
+            color: white;
+            background: #2563eb;
+        }
+
+        .btn-guardar:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-volver {
+            color: #1e40af;
+            background: #dbeafe;
+        }
+
+        .mensaje {
+            display: none;
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+
+        .mensaje-error {
+            display: block;
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        .mensaje-exito {
+            display: block;
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        @media (max-width: 600px) {
+            .contenedor {
+                margin: 25px auto;
+            }
+
+            .panel {
+                padding: 23px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-    <h1>Crear nueva tarea</h1>
+    {% csrf_token %}
 
-    <form id="formTarea">
+    <header class="navbar">
+        <h2>Gestión de tareas</h2>
+    </header>
 
-        <label for="titulo">Título:</label>
-        <br>
-        <input type="text" id="titulo" name="titulo" required>
+    <main class="contenedor">
 
-        <br><br>
+        <section class="panel">
 
-        <label for="descripcion">Descripción:</label>
-        <br>
-        <textarea id="descripcion" name="descripcion" required></textarea>
+            <h1>Crear nueva tarea</h1>
 
-        <br><br>
+            <p class="descripcion">
+                Completa los siguientes campos para registrar
+                una nueva tarea en la base de datos.
+            </p>
 
-        <label>
-            <input type="checkbox" id="completada" name="completada">
-            Tarea completada
-        </label>
+            <form id="formTarea">
 
-        <br><br>
+                <div class="campo">
 
-        <button type="submit">
-            Guardar tarea
-        </button>
+                    <label for="titulo">Título:</label>
 
-    </form>
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        maxlength="200"
+                        required
+                        placeholder="Ingresa el título de la tarea"
+                    >
 
-    <p id="mensaje"></p>
+                </div>
 
-    <br>
+                <div class="campo">
 
-    <a href="/tareas/">Volver al inicio</a>
+                    <label for="descripcion">Descripción:</label>
+
+                    <textarea
+                        id="descripcion"
+                        name="descripcion"
+                        required
+                        placeholder="Describe la tarea..."
+                    ></textarea>
+
+                </div>
+
+                <div class="campo checkbox">
+
+                    <input
+                        type="checkbox"
+                        id="completada"
+                        name="completada"
+                    >
+
+                    <label for="completada">
+                        Tarea completada
+                    </label>
+
+                </div>
+
+                <div class="botones">
+
+                    <button
+                        type="submit"
+                        class="btn-guardar"
+                        id="btnGuardar"
+                    >
+                        Guardar tarea
+                    </button>
+
+                    <a href="/tareas/" class="btn btn-volver">
+                        Volver al listado
+                    </a>
+
+                </div>
+
+            </form>
+
+            <div id="mensaje" class="mensaje" role="alert"></div>
+
+        </section>
+
+    </main>
 
     <script>
-        const formulario = document.getElementById('formTarea');
-        const mensaje = document.getElementById('mensaje');
 
-        formulario.addEventListener('submit', async function(event) {
+        const formulario = document.getElementById("formTarea");
+        const mensaje = document.getElementById("mensaje");
+        const botonGuardar = document.getElementById("btnGuardar");
 
-            // Evita el envío tradicional del formulario
+        const csrfToken = document.querySelector(
+            "[name=csrfmiddlewaretoken]"
+        ).value;
+
+        // =========================================
+        // CREAR TAREA - POST
+        // API: /api/tareas/
+        // =========================================
+
+        formulario.addEventListener("submit", async function(event) {
+
             event.preventDefault();
 
-            // Recupera el token obtenido durante el login
-            const token = sessionStorage.getItem('token');
+            const titulo = document.getElementById("titulo").value.trim();
+            const descripcion = document.getElementById("descripcion").value.trim();
+            const completada = document.getElementById("completada").checked;
 
-            if (!token) {
-                mensaje.textContent =
-                    'No hay sesión activa. Inicia sesión nuevamente.';
+            if (!titulo || !descripcion) {
+
+                mostrarMensaje(
+                    "Debes ingresar el título y la descripción.",
+                    "error"
+                );
+
                 return;
             }
 
-            // Captura los datos del formulario
-            const titulo = document.getElementById('titulo').value;
-            const descripcion = document.getElementById('descripcion').value;
-            const completada = document.getElementById('completada').checked;
-
-            // Construye el objeto que enviaremos a Django
             const tarea = {
                 titulo: titulo,
                 descripcion: descripcion,
                 completada: completada
             };
 
+            botonGuardar.disabled = true;
+            botonGuardar.textContent = "Guardando...";
+
             try {
-                const respuesta = await fetch('/api/tareas/', {
-                    method: 'POST',
+
+                const respuesta = await fetch("/api/tareas/", {
+
+                    method: "POST",
+
+                    credentials: "same-origin",
+
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "X-CSRFToken": csrfToken
                     },
+
                     body: JSON.stringify(tarea)
+
                 });
+
+                if (respuesta.status === 401) {
+
+                    window.location.replace("/?expired=1");
+                    return;
+
+                }
 
                 const datos = await respuesta.json();
 
                 if (respuesta.ok) {
-                    mensaje.textContent = 'Tarea creada correctamente.';
 
-                    // Redirige a la página que lista las tareas
-                    window.location.href = '/tareas/';
-                } else if (respuesta.status === 401 ||
-                        respuesta.status === 403) {
-                    mensaje.textContent =
-                        'Tu sesión no es válida. Inicia sesión nuevamente.';
+                    mostrarMensaje(
+                        "Tarea creada correctamente. Volviendo al listado...",
+                        "exito"
+                    );
+
+                    formulario.reset();
+
+                    setTimeout(function() {
+
+                        window.location.href = "/tareas/";
+
+                    }, 1200);
+
+                } else if (respuesta.status === 403) {
+
+                    mostrarMensaje(
+                        "Acceso rechazado. Comprueba tu sesión y el token CSRF.",
+                        "error"
+                    );
+
                 } else {
-                    mensaje.textContent =
-                        datos.error || 'No se pudo crear la tarea.';
+
+                    mostrarMensaje(
+                        datos.error || "No se pudo crear la tarea.",
+                        "error"
+                    );
+
                 }
 
             } catch (error) {
-                mensaje.textContent =
-                    'Error de conexión con el servidor.';
-                console.error(error);
+
+                console.error("Error al crear tarea:", error);
+
+                mostrarMensaje(
+                    "Error de conexión con el servidor.",
+                    "error"
+                );
+
+            } finally {
+
+                botonGuardar.disabled = false;
+                botonGuardar.textContent = "Guardar tarea";
+
             }
 
         });
+
+        // =========================================
+        // MOSTRAR MENSAJES
+        // =========================================
+
+        function mostrarMensaje(texto, tipo) {
+
+            mensaje.textContent = texto;
+
+            mensaje.className = tipo === "exito"
+                ? "mensaje mensaje-exito"
+                : "mensaje mensaje-error";
+
+        }
+
     </script>
 
 </body>

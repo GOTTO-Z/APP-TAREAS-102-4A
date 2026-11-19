@@ -1,205 +1,576 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Mis Tareas</title>
+    <title>Panel de tareas</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #1e293b;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff, #bfdbfe);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 6%;
+            background: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.10);
+        }
+
+        .navbar h2 {
+            color: #1d4ed8;
+        }
+
+        .usuario {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .estado {
+            color: #166534;
+            background: #dcfce7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        button, .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-cerrar {
+            color: white;
+            background: #dc2626;
+        }
+
+        .btn-cerrar:hover {
+            background: #b91c1c;
+        }
+
+        .btn-crear {
+            color: white;
+            background: #2563eb;
+        }
+
+        .btn-crear:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-ver {
+            color: white;
+            background: #0891b2;
+        }
+
+        .btn-editar {
+            color: white;
+            background: #d97706;
+        }
+
+        .btn-eliminar {
+            color: white;
+            background: #dc2626;
+        }
+
         .contenedor {
-            width: 80%;
-            margin: 40px auto;
+            width: 90%;
+            max-width: 1150px;
+            margin: 45px auto;
+        }
+
+        .bienvenida, .panel-tareas {
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.10);
+            margin-bottom: 25px;
         }
 
         h1 {
-            text-align: center;
+            color: #1d4ed8;
+            margin-bottom: 10px;
+        }
+
+        .bienvenida p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .cabecera-tareas {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .cabecera-tareas h2 {
+            color: #1e40af;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
         }
 
         .acciones {
-            text-align: center;
-            margin-bottom: 30px;
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
         }
 
-        .boton {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #333;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
+        .acciones button {
+            padding: 8px 10px;
+            font-size: 12px;
         }
 
-        .tarea {
-            background-color: white;
-            padding: 20px;
-            margin-bottom: 15px;
+        .estado-tarea {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .completada {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .pendiente {
+            color: #92400e;
+            background: #fef3c7;
+        }
+
+        .mensaje {
+            padding: 15px;
+            margin: 15px 0;
             border-radius: 8px;
+            color: #1e40af;
+            background: #eff6ff;
         }
 
-        .tarea h2 {
-            margin-top: 0;
+        .mensaje-error {
+            color: #991b1b;
+            background: #fee2e2;
         }
 
-        .botones {
-            margin-top: 15px;
-        }
-
-        .botones a {
-            margin-right: 10px;
-            text-decoration: none;
-        }
-
-        #mensaje {
+        .vacio {
             text-align: center;
-            margin-bottom: 20px;
+            padding: 30px;
+            color: #64748b;
+        }
+
+        .botones-panel {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .usuario {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .cabecera-tareas {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .contenedor {
+                margin: 25px auto;
+            }
+
+            .bienvenida, .panel-tareas {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="contenedor">
+    {% csrf_token %}
 
-    <h1>📝 Mis Tareas</h1>
+    <header class="navbar">
 
-    <div class="acciones">
-        <a href="{% url 'crear_tarea' %}" class="boton">
-            ➕ Nueva tarea
-        </a>
-    </div>
+        <h2>Gestión de tareas</h2>
 
-    <p id="mensaje" role="status" aria-live="polite">
-        Cargando tareas...
-    </p>
+        <div class="usuario">
 
-    <!-- Aquí JavaScript mostrará las tareas de la API -->
-    <div id="lista-tareas"></div>
+            <span>
+                Usuario: <strong>{{ request.session.usuario }}</strong>
+            </span>
 
-</div>
+            <span class="estado">Sesión activa</span>
 
-<script>
-    const listaTareas = document.getElementById('lista-tareas');
-    const mensaje = document.getElementById('mensaje');
+            <button
+                type="button"
+                class="btn-cerrar"
+                id="btnCerrarSesion">
+                Cerrar sesión
+            </button>
 
-    async function cargarTareas() {
+        </div>
 
-        // Recuperar el token guardado durante el login
-        const token = sessionStorage.getItem('token');
+    </header>
 
-        // Comprobar si existe un token
-        if (!token) {
-            mensaje.textContent = 'Debes iniciar sesión para ver tus tareas.';
-            window.location.href = '/';
-            return;
+    <main class="contenedor">
+
+        <section class="bienvenida">
+
+            <h1>
+                ¡Bienvenido, {{ request.session.usuario }}!
+            </h1>
+
+            <p>
+                Administra tus tareas utilizando la API REST
+                protegida mediante autenticación JWT.
+            </p>
+
+        </section>
+
+        <section class="panel-tareas">
+
+            <div class="cabecera-tareas">
+
+                <div>
+                    <h2>Listado de tareas</h2>
+                    <p>Registros almacenados en la base de datos.</p>
+                </div>
+
+                <div class="botones-panel">
+
+                    <a href="/crear/" class="btn btn-crear">
+                        + Nueva tarea
+                    </a>
+
+                    <button
+                        type="button"
+                        class="btn-crear"
+                        id="btnActualizar">
+                        Actualizar
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div id="mensaje" class="mensaje">
+                Cargando tareas...
+            </div>
+
+            <div class="tabla-contenedor">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Descripción</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaTareas">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+
+        const tablaTareas = document.getElementById("tablaTareas");
+        const mensaje = document.getElementById("mensaje");
+        const csrfToken = document.querySelector(
+            '[name=csrfmiddlewaretoken]'
+        ).value;
+
+        // =========================================
+        // CONTROL DE SESION EXPIRADA
+        // =========================================
+
+        function redirigirLogin() {
+
+            window.location.replace("/?expired=1");
+
         }
 
-        try {
-            // Consultar la API GET enviando el token
-            const respuesta = await fetch('/api/tareas/', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Token ${token}`
+        // =========================================
+        // CONSULTAR TAREAS - GET
+        // API: /api/tareas/
+        // =========================================
+
+        async function cargarTareas() {
+
+            mensaje.textContent = "Consultando tareas...";
+            mensaje.className = "mensaje";
+
+            tablaTareas.innerHTML = "";
+
+            try {
+
+                const respuesta = await fetch("/api/tareas/", {
+
+                    method: "GET",
+
+                    credentials: "same-origin",
+
+                    headers: {
+                        "Accept": "application/json"
+                    }
+
+                });
+
+                if (respuesta.status === 401) {
+                    redirigirLogin();
+                    return;
                 }
-            });
 
-            // Si la autenticación falla, volver al login
-            if (respuesta.status === 401 || respuesta.status === 403) {
-                sessionStorage.removeItem('token');
-                window.location.href = '/';
-                return;
+                if (respuesta.status === 403) {
+                    mensaje.textContent =
+                        "Acceso rechazado. Verifica tu sesión y los permisos.";
+                    mensaje.className = "mensaje mensaje-error";
+                    return;
+                }
+
+                if (!respuesta.ok) {
+                    throw new Error("No fue posible consultar las tareas.");
+                }
+
+                const tareas = await respuesta.json();
+
+                if (tareas.length === 0) {
+
+                    mensaje.textContent =
+                        "No existen tareas registradas en la base de datos.";
+
+                    tablaTareas.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="vacio">
+                                No hay tareas para mostrar.
+                            </td>
+                        </tr>
+                    `;
+
+                    return;
+                }
+
+                mensaje.textContent =
+                    "Se encontraron " + tareas.length + " tarea(s).";
+
+                tareas.forEach(tarea => {
+
+                    const fila = document.createElement("tr");
+
+                    const estado = tarea.completada
+                        ? "Completada"
+                        : "Pendiente";
+
+                    const claseEstado = tarea.completada
+                        ? "completada"
+                        : "pendiente";
+
+                    // Se utiliza textContent para mostrar datos
+                    // de la base de datos de forma segura.
+                    const id = document.createElement("td");
+                    id.textContent = tarea.id;
+
+                    const titulo = document.createElement("td");
+                    titulo.textContent = tarea.titulo;
+
+                    const descripcion = document.createElement("td");
+                    descripcion.textContent = tarea.descripcion;
+
+                    const estadoCelda = document.createElement("td");
+
+                    const etiqueta = document.createElement("span");
+                    etiqueta.className =
+                        "estado-tarea " + claseEstado;
+                    etiqueta.textContent = estado;
+
+                    estadoCelda.appendChild(etiqueta);
+
+                    const acciones = document.createElement("td");
+                    acciones.className = "acciones";
+
+                    const btnVer = document.createElement("button");
+                    btnVer.className = "btn-ver";
+                    btnVer.textContent = "Ver";
+                    btnVer.addEventListener("click", () => {
+                        window.location.href = `/detalle/${tarea.id}/`;
+                    });
+
+                    const btnEditar = document.createElement("button");
+                    btnEditar.className = "btn-editar";
+                    btnEditar.textContent = "Editar";
+                    btnEditar.addEventListener("click", () => {
+                        window.location.href = `/editar/${tarea.id}/`;
+                    });
+
+                    const btnEliminar = document.createElement("button");
+                    btnEliminar.className = "btn-eliminar";
+                    btnEliminar.textContent = "Eliminar";
+                    btnEliminar.addEventListener("click", () => {
+                        window.location.href = `/eliminar/${tarea.id}/`;
+                    });
+
+                    acciones.append(
+                        btnVer,
+                        btnEditar,
+                        btnEliminar
+                    );
+
+                    fila.append(
+                        id,
+                        titulo,
+                        descripcion,
+                        estadoCelda,
+                        acciones
+                    );
+
+                    tablaTareas.appendChild(fila);
+
+                });
+
+            } catch (error) {
+
+                mensaje.textContent =
+                    "Error al consultar las tareas: " + error.message;
+
+                mensaje.className = "mensaje mensaje-error";
+
             }
 
-            if (!respuesta.ok) {
-                mensaje.textContent = 'Error al consultar las tareas.';
-                return;
-            }
-
-            // Convertir la respuesta JSON a un arreglo de JavaScript
-            const tareas = await respuesta.json();
-
-            // Limpiar el contenedor antes de mostrar los resultados
-            listaTareas.replaceChildren();
-
-            if (tareas.length === 0) {
-                mensaje.textContent = 'No existen tareas registradas.';
-                return;
-            }
-
-            mensaje.textContent = '';
-
-            // Crear una tarjeta para cada tarea recibida
-            tareas.forEach(tarea => {
-
-                const tarjeta = document.createElement('div');
-                tarjeta.className = 'tarea';
-
-                const titulo = document.createElement('h2');
-                titulo.textContent = tarea.titulo;
-
-                const descripcion = document.createElement('p');
-                descripcion.textContent = tarea.descripcion;
-
-                const estado = document.createElement('p');
-                const etiqueta = document.createElement('strong');
-
-                etiqueta.textContent = 'Estado: ';
-                estado.appendChild(etiqueta);
-                estado.append(
-                    tarea.completada
-                        ? 'Completada ✅'
-                        : 'Pendiente ⏳'
-                );
-
-                const botones = document.createElement('div');
-                botones.className = 'botones';
-
-                const enlaceDetalle = document.createElement('a');
-                enlaceDetalle.href = `/detalle/${tarea.id}/`;
-                enlaceDetalle.textContent = '👁️ Ver';
-
-                const enlaceEditar = document.createElement('a');
-                enlaceEditar.href = `/editar/${tarea.id}/`;
-                enlaceEditar.textContent = '✏️ Editar';
-
-                const enlaceEliminar = document.createElement('a');
-                enlaceEliminar.href = `/eliminar/${tarea.id}/`;
-                enlaceEliminar.textContent = '🗑️ Eliminar';
-
-                botones.append(
-                    enlaceDetalle,
-                    enlaceEditar,
-                    enlaceEliminar
-                );
-
-                tarjeta.append(
-                    titulo,
-                    descripcion,
-                    estado,
-                    botones
-                );
-
-                listaTareas.appendChild(tarjeta);
-            });
-
-        } catch (error) {
-            mensaje.textContent =
-                'No se pudo conectar con el servidor.';
-            console.error('Error al cargar tareas:', error);
         }
-    }
 
-    // Ejecutar la consulta al cargar la página
-    cargarTareas();
-</script>
+        // =========================================
+        // ACTUALIZAR LISTADO
+        // =========================================
+
+        document.getElementById("btnActualizar")
+            .addEventListener("click", cargarTareas);
+
+        // =========================================
+        // CERRAR SESION
+        // =========================================
+
+        document.getElementById("btnCerrarSesion")
+            .addEventListener("click", async function() {
+
+                const confirmar = confirm(
+                    "¿Estás seguro de que deseas cerrar tu sesión?"
+                );
+
+                if (!confirmar) {
+                    return;
+                }
+
+                this.disabled = true;
+                this.textContent = "Cerrando sesión...";
+
+                try {
+
+                    const respuesta = await fetch("/web/logout/", {
+
+                        method: "POST",
+
+                        credentials: "same-origin",
+
+                        headers: {
+                            "X-CSRFToken": csrfToken
+                        }
+
+                    });
+
+                    if (respuesta.ok) {
+
+                        window.location.replace("/");
+
+                    } else {
+
+                        alert("No fue posible cerrar la sesión.");
+
+                        this.disabled = false;
+                        this.textContent = "Cerrar sesión";
+
+                    }
+
+                } catch (error) {
+
+                    alert("Error de conexión al cerrar sesión.");
+
+                    this.disabled = false;
+                    this.textContent = "Cerrar sesión";
+
+                }
+
+            });
+
+        // =========================================
+        // CARGA INICIAL
+        // =========================================
+
+        cargarTareas();
+
+    </script>
 
 </body>
 </html>

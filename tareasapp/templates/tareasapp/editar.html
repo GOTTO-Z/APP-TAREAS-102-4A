@@ -1,45 +1,78 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar tarea</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 30px;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #1e293b;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff, #bfdbfe);
+        }
+
+        .navbar {
+            padding: 20px 6%;
+            background: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.10);
+        }
+
+        .navbar h2 {
+            color: #1d4ed8;
         }
 
         .contenedor {
+            width: 90%;
             max-width: 700px;
-            margin: auto;
+            margin: 55px auto;
+        }
+
+        .panel {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.10);
         }
 
         h1 {
-            text-align: center;
+            color: #1d4ed8;
+            margin-bottom: 10px;
+        }
+
+        .descripcion-panel {
+            color: #64748b;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .campo {
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-top: 15px;
-            font-weight: bold;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
-        input[type="text"],
-        textarea {
+        input[type="text"], textarea {
             width: 100%;
-            box-sizing: border-box;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #eff6ff;
+            font-family: inherit;
+            font-size: 15px;
         }
 
         textarea {
@@ -47,130 +80,271 @@
             resize: vertical;
         }
 
-        .botones {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
+        input:focus, textarea:focus {
+            outline: 2px solid #93c5fd;
+            border-color: #2563eb;
         }
 
-        button, .volver {
-            padding: 11px 16px;
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox input {
+            width: 17px;
+            height: 17px;
+        }
+
+        .checkbox label {
+            margin: 0;
+        }
+
+        .botones {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        button, .boton {
+            padding: 12px 18px;
             border: none;
-            border-radius: 5px;
-            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
             text-decoration: none;
-            font-size: 15px;
+            text-align: center;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .guardar {
-            background-color: #198754;
+            color: white;
+            background: #2563eb;
         }
 
-        .actualizar-estado {
-            background-color: #0d6efd;
+        .guardar:hover {
+            background: #1d4ed8;
         }
 
         .volver {
-            background-color: #333;
+            color: #1e40af;
+            background: #dbeafe;
         }
 
-        #mensaje {
-            margin-top: 15px;
+        .mensaje {
+            padding: 14px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            color: #1e40af;
+            background: #eff6ff;
+            line-height: 1.5;
+        }
+
+        .mensaje-error {
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        .mensaje-exito {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        @media (max-width: 600px) {
+            .contenedor {
+                margin: 25px auto;
+            }
+
+            .panel {
+                padding: 23px;
+            }
         }
     </style>
 </head>
 
 <body>
+
+    {% csrf_token %}
+
+    <header class="navbar">
+        <h2>Gestión de tareas</h2>
+    </header>
+
     <main class="contenedor">
-        <h1>✏️ Editar tarea</h1>
 
-        <p id="mensaje">Cargando tarea...</p>
+        <section class="panel">
 
-        <form id="formEditar" hidden>
-            <label for="titulo">Título:</label>
-            <input
-                type="text"
-                id="titulo"
-                required
-                maxlength="100"
-            >
+            <h1>Editar tarea</h1>
 
-            <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" required></textarea>
+            <p class="descripcion-panel">
+                Modifica la información de la tarea seleccionada.
+            </p>
 
-            <label>
-                <input type="checkbox" id="completada">
-                Tarea completada
-            </label>
+            <p id="mensaje" class="mensaje">
+                Cargando información de la tarea...
+            </p>
 
-            <div class="botones">
-                <button type="submit" class="guardar">
-                    Guardar todos los cambios (PUT)
-                </button>
+            <form id="formEditar" hidden>
 
-                <button
-                    type="button"
-                    id="btnPatch"
-                    class="actualizar-estado"
-                >
-                    Actualizar solo el estado (PATCH)
-                </button>
+                <div class="campo">
 
-                <a href="/tareas/" class="volver">
-                    Volver al listado
-                </a>
-            </div>
-        </form>
+                    <label for="titulo">Título:</label>
+
+                    <input
+                        type="text"
+                        id="titulo"
+                        required
+                        maxlength="200"
+                        placeholder="Ingresa el título"
+                    >
+
+                </div>
+
+                <div class="campo">
+
+                    <label for="descripcion">Descripción:</label>
+
+                    <textarea
+                        id="descripcion"
+                        required
+                        placeholder="Describe la tarea"
+                    ></textarea>
+
+                </div>
+
+                <div class="campo checkbox">
+
+                    <input
+                        type="checkbox"
+                        id="completada"
+                    >
+
+                    <label for="completada">
+                        Tarea completada
+                    </label>
+
+                </div>
+
+                <div class="botones">
+
+                    <button
+                        type="submit"
+                        class="guardar"
+                        id="btnGuardar"
+                    >
+                        Guardar cambios
+                    </button>
+
+                    <a href="/tareas/" class="boton volver">
+                        Volver al listado
+                    </a>
+
+                </div>
+
+            </form>
+
+        </section>
+
     </main>
 
     <script>
-        const token = sessionStorage.getItem('token');
 
-        // Obtenemos el ID desde la URL /editar/5/
+        // =========================================
+        // CONFIGURACION
+        // =========================================
+
         const partesURL = window.location.pathname
-            .split('/')
+            .split("/")
             .filter(Boolean);
 
         const tareaId = partesURL[partesURL.length - 1];
 
-        const formulario = document.getElementById('formEditar');
-        const campoTitulo = document.getElementById('titulo');
-        const campoDescripcion = document.getElementById('descripcion');
-        const campoCompletada = document.getElementById('completada');
-        const mensaje = document.getElementById('mensaje');
-        const btnPatch = document.getElementById('btnPatch');
+        const formulario = document.getElementById("formEditar");
 
-        // Consultar la tarea y cargar los datos en el formulario.
+        const campoTitulo = document.getElementById("titulo");
+        const campoDescripcion = document.getElementById("descripcion");
+        const campoCompletada = document.getElementById("completada");
+
+        const mensaje = document.getElementById("mensaje");
+        const botonGuardar = document.getElementById("btnGuardar");
+
+        const csrfToken = document.querySelector(
+            '[name=csrfmiddlewaretoken]'
+        ).value;
+
+
+        // =========================================
+        // MOSTRAR MENSAJES
+        // =========================================
+
+        function mostrarMensaje(texto, tipo) {
+
+            mensaje.textContent = texto;
+
+            mensaje.className = tipo === "error"
+                ? "mensaje mensaje-error"
+                : tipo === "exito"
+                    ? "mensaje mensaje-exito"
+                    : "mensaje";
+
+        }
+
+
+        // =========================================
+        // CONSULTAR TAREA - GET
+        // API: /api/tareas/<id>/
+        // =========================================
+
         async function cargarTarea() {
-            if (!token) {
-                window.location.href = '/';
-                return;
-            }
 
             try {
+
                 const respuesta = await fetch(
                     `/api/tareas/${tareaId}/`,
                     {
-                        method: 'GET',
+                        method: "GET",
+                        credentials: "same-origin",
                         headers: {
-                            'Authorization': `Token ${token}`
+                            "Accept": "application/json"
                         }
                     }
                 );
 
-                if (respuesta.status === 401 ||
-                    respuesta.status === 403) {
-                    sessionStorage.removeItem('token');
-                    window.location.href = '/';
+                if (respuesta.status === 401) {
+
+                    window.location.replace("/?expired=1");
                     return;
+
+                }
+
+                if (respuesta.status === 403) {
+
+                    throw new Error(
+                        "Acceso rechazado. Verifica tu sesión."
+                    );
+
+                }
+
+                if (respuesta.status === 404) {
+
+                    throw new Error(
+                        "La tarea solicitada no existe."
+                    );
+
                 }
 
                 if (!respuesta.ok) {
+
                     throw new Error(
                         `No se pudo cargar la tarea. HTTP ${respuesta.status}`
                     );
+
                 }
 
                 const tarea = await respuesta.json();
@@ -180,84 +354,136 @@
                 campoCompletada.checked = tarea.completada;
 
                 formulario.hidden = false;
-                mensaje.textContent = `Editando tarea #${tarea.id}`;
+
+                mostrarMensaje(
+                    `Editando tarea #${tarea.id}`,
+                    "normal"
+                );
 
             } catch (error) {
-                console.error(error);
-                mensaje.textContent = error.message;
+
+                console.error("Error al cargar tarea:", error);
+
+                mostrarMensaje(error.message, "error");
+
             }
+
         }
 
-        // PUT: enviar todos los campos de la tarea.
-        formulario.addEventListener('submit', async function(evento) {
+
+        // =========================================
+        // ACTUALIZAR TAREA - PUT
+        // API: /api/tareas/<id>/
+        // =========================================
+
+        formulario.addEventListener("submit", async function(evento) {
+
             evento.preventDefault();
 
             const datos = {
+
                 titulo: campoTitulo.value.trim(),
+
                 descripcion: campoDescripcion.value.trim(),
+
                 completada: campoCompletada.checked
+
             };
 
             if (!datos.titulo || !datos.descripcion) {
-                mensaje.textContent =
-                    'El título y la descripción son obligatorios.';
+
+                mostrarMensaje(
+                    "El título y la descripción son obligatorios.",
+                    "error"
+                );
+
                 return;
+
             }
 
-            await enviarActualizacion('PUT', datos);
-        });
+            botonGuardar.disabled = true;
+            botonGuardar.textContent = "Guardando cambios...";
 
-        // PATCH: modificar solamente el estado de la tarea.
-        btnPatch.addEventListener('click', async function() {
-            await enviarActualizacion('PATCH', {
-                completada: campoCompletada.checked
-            });
-        });
-
-        async function enviarActualizacion(metodo, datos) {
-            mensaje.textContent = 'Guardando cambios...';
+            mostrarMensaje("Actualizando tarea...", "normal");
 
             try {
+
                 const respuesta = await fetch(
                     `/api/tareas/${tareaId}/`,
                     {
-                        method: metodo,
+                        method: "PUT",
+
+                        credentials: "same-origin",
+
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Token ${token}`
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                            "X-CSRFToken": csrfToken
                         },
+
                         body: JSON.stringify(datos)
                     }
                 );
 
-                if (respuesta.status === 401 ||
-                    respuesta.status === 403) {
-                    sessionStorage.removeItem('token');
-                    window.location.href = '/';
+                if (respuesta.status === 401) {
+
+                    window.location.replace("/?expired=1");
                     return;
+
                 }
+
+                if (respuesta.status === 403) {
+
+                    throw new Error(
+                        "Acceso rechazado. Verifica tu sesión y el token CSRF."
+                    );
+
+                }
+
+                const resultado = await respuesta.json();
 
                 if (!respuesta.ok) {
-                    const error = await respuesta.json();
+
                     throw new Error(
-                        error.error || error.mensaje ||
+                        resultado.error ||
+                        resultado.mensaje ||
                         `Error HTTP ${respuesta.status}`
                     );
+
                 }
 
-                mensaje.textContent =
-                    'Tarea actualizada correctamente.';
+                mostrarMensaje(
+                    "Tarea actualizada correctamente.",
+                    "exito"
+                );
 
-                // Redirigir después de mostrar el resultado.
-                window.location.href = '/tareas/';
+                setTimeout(function() {
+
+                    window.location.href = "/tareas/";
+
+                }, 1200);
 
             } catch (error) {
-                console.error(error);
-                mensaje.textContent = error.message;
+
+                console.error("Error al actualizar:", error);
+
+                mostrarMensaje(error.message, "error");
+
+                botonGuardar.disabled = false;
+                botonGuardar.textContent = "Guardar cambios";
+
             }
-        }
+
+        });
+
+
+        // =========================================
+        // CARGA INICIAL
+        // =========================================
 
         cargarTarea();
+
     </script>
+
 </body>
 </html>

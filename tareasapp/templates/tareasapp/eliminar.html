@@ -1,38 +1,113 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eliminar tarea</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 30px;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #1e293b;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff, #bfdbfe);
+        }
+
+        .navbar {
+            padding: 20px 6%;
+            background: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.10);
+        }
+
+        .navbar h2 {
+            color: #1d4ed8;
         }
 
         .contenedor {
-            max-width: 830px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 10px;
+            width: 90%;
+            max-width: 750px;
+            margin: 55px auto;
+        }
+
+        .panel {
+            padding: 35px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.10);
             text-align: center;
         }
 
         h1 {
-            color: #dc3545;
+            color: #dc2626;
+            margin-bottom: 12px;
+        }
+
+        .descripcion-panel {
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .advertencia {
+            margin-top: 20px;
+            padding: 15px;
+            color: #991b1b;
+            background: #fee2e2;
+            border-radius: 9px;
         }
 
         .datos {
             margin: 25px 0;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
+            padding: 22px;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
             text-align: left;
+        }
+
+        .campo {
+            margin-bottom: 17px;
+        }
+
+        .campo:last-child {
+            margin-bottom: 0;
+        }
+
+        .etiqueta {
+            display: block;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 6px;
+        }
+
+        .valor {
+            overflow-wrap: anywhere;
+            line-height: 1.5;
+        }
+
+        .estado {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .completada {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .pendiente {
+            color: #92400e;
+            background: #fef3c7;
         }
 
         .botones {
@@ -43,22 +118,14 @@
             margin-top: 25px;
         }
 
-        button, .volver {
+        button, .boton {
             padding: 12px 18px;
             border: none;
-            border-radius: 5px;
-            font-size: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
             text-decoration: none;
             cursor: pointer;
-            color: white;
-        }
-
-        .eliminar {
-            background-color: #dc3545;
-        }
-
-        .volver {
-            background-color: #333;
         }
 
         button:disabled {
@@ -66,131 +133,337 @@
             cursor: not-allowed;
         }
 
-        #mensaje {
+        .eliminar {
+            color: white;
+            background: #dc2626;
+        }
+
+        .eliminar:hover {
+            background: #b91c1c;
+        }
+
+        .volver {
+            color: #1e40af;
+            background: #dbeafe;
+        }
+
+        .mensaje {
             margin-top: 20px;
+            padding: 14px;
+            border-radius: 8px;
+            color: #1e40af;
+            background: #eff6ff;
+        }
+
+        .mensaje-error {
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        @media (max-width: 600px) {
+            .contenedor {
+                margin: 25px auto;
+            }
+
+            .panel {
+                padding: 23px;
+            }
         }
     </style>
 </head>
 
 <body>
+
+    {% csrf_token %}
+
+    <header class="navbar">
+        <h2>Gestión de tareas</h2>
+    </header>
+
     <main class="contenedor">
-        <h1>🗑️ Eliminar tarea</h1>
 
-        <p>¿Estás seguro de que deseas eliminar esta tarea?</p>
+        <section class="panel">
 
-        <div class="datos">
-            <p><strong>ID:</strong> <span id="tareaId">Cargando...</span></p>
-            <p><strong>Título:</strong> <span id="titulo"></span></p>
-            <p><strong>Descripción:</strong> <span id="descripcion"></span></p>
-            <p><strong>Estado:</strong> <span id="estado"></span></p>
-        </div>
+            <h1>Eliminar tarea</h1>
 
-        <p>Esta acción no se puede deshacer.</p>
+            <p class="descripcion-panel">
+                Revisa la información antes de eliminar el registro.
+            </p>
 
-        <div class="botones">
-            <button type="button" id="btnEliminar" class="eliminar" disabled>
-                Sí, eliminar tarea
-            </button>
+            <div class="advertencia">
+                Atención: esta acción no se puede deshacer.
+            </div>
 
-            <a href="/tareas/" class="volver">Cancelar y volver</a>
-        </div>
+            <div class="datos">
 
-        <p id="mensaje"></p>
+                <div class="campo">
+                    <span class="etiqueta">ID:</span>
+                    <span id="tareaId" class="valor">Cargando...</span>
+                </div>
+
+                <div class="campo">
+                    <span class="etiqueta">Título:</span>
+                    <span id="titulo" class="valor"></span>
+                </div>
+
+                <div class="campo">
+                    <span class="etiqueta">Descripción:</span>
+                    <span id="descripcion" class="valor"></span>
+                </div>
+
+                <div class="campo">
+                    <span class="etiqueta">Estado:</span>
+                    <span id="estado" class="estado"></span>
+                </div>
+
+            </div>
+
+            <div class="botones">
+
+                <button
+                    type="button"
+                    id="btnEliminar"
+                    class="eliminar"
+                    disabled
+                >
+                    Sí, eliminar tarea
+                </button>
+
+                <a href="/tareas/" class="boton volver">
+                    Cancelar y volver
+                </a>
+
+            </div>
+
+            <p id="mensaje" class="mensaje" hidden></p>
+
+        </section>
+
     </main>
 
     <script>
-        const token = sessionStorage.getItem('token');
-        const partesURL = window.location.pathname.split('/').filter(Boolean);
+
+        // =========================================
+        // CONFIGURACION
+        // =========================================
+
+        const partesURL = window.location.pathname
+            .split("/")
+            .filter(Boolean);
+
         const tareaId = partesURL[partesURL.length - 1];
 
-        const btnEliminar = document.getElementById('btnEliminar');
-        const mensaje = document.getElementById('mensaje');
+        const btnEliminar = document.getElementById("btnEliminar");
+        const mensaje = document.getElementById("mensaje");
 
-        // Obtener los datos de la tarea mediante la API.
+        const csrfToken = document.querySelector(
+            '[name=csrfmiddlewaretoken]'
+        ).value;
+
+
+        // =========================================
+        // MOSTRAR MENSAJES
+        // =========================================
+
+        function mostrarMensaje(texto, error = false) {
+
+            mensaje.hidden = false;
+            mensaje.textContent = texto;
+
+            mensaje.className = error
+                ? "mensaje mensaje-error"
+                : "mensaje";
+
+        }
+
+
+        // =========================================
+        // CONSULTAR TAREA - GET
+        // API: /api/tareas/<id>/
+        // =========================================
+
         async function cargarTarea() {
-            if (!token) {
-                window.location.href = '/';
-                return;
-            }
 
             try {
-                const respuesta = await fetch(`/api/tareas/${tareaId}/`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Token ${token}`
-                    }
-                });
 
-                if (respuesta.status === 401 || respuesta.status === 403) {
-                    sessionStorage.removeItem('token');
-                    window.location.href = '/';
+                const respuesta = await fetch(
+                    `/api/tareas/${tareaId}/`,
+                    {
+                        method: "GET",
+                        credentials: "same-origin",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    }
+                );
+
+                if (respuesta.status === 401) {
+
+                    window.location.replace("/?expired=1");
                     return;
+
+                }
+
+                if (respuesta.status === 403) {
+
+                    throw new Error(
+                        "Acceso rechazado. Verifica tu sesión."
+                    );
+
+                }
+
+                if (respuesta.status === 404) {
+
+                    throw new Error(
+                        "La tarea solicitada no existe."
+                    );
+
                 }
 
                 if (!respuesta.ok) {
-                    throw new Error('No se pudo cargar la tarea.');
+
+                    throw new Error(
+                        `No se pudo cargar la tarea. HTTP ${respuesta.status}`
+                    );
+
                 }
 
                 const tarea = await respuesta.json();
 
-                document.getElementById('tareaId').textContent = tarea.id;
-                document.getElementById('titulo').textContent = tarea.titulo;
-                document.getElementById('descripcion').textContent = tarea.descripcion;
-                document.getElementById('estado').textContent =
-                    tarea.completada ? 'Completada' : 'Pendiente';
+                document.getElementById("tareaId").textContent =
+                    tarea.id;
+
+                document.getElementById("titulo").textContent =
+                    tarea.titulo;
+
+                document.getElementById("descripcion").textContent =
+                    tarea.descripcion;
+
+                const estado = document.getElementById("estado");
+
+                if (tarea.completada) {
+
+                    estado.textContent = "Completada";
+                    estado.className = "estado completada";
+
+                } else {
+
+                    estado.textContent = "Pendiente";
+                    estado.className = "estado pendiente";
+
+                }
 
                 btnEliminar.disabled = false;
 
             } catch (error) {
-                console.error(error);
-                mensaje.textContent = error.message;
+
+                console.error("Error al consultar tarea:", error);
+
+                mostrarMensaje(error.message, true);
+
             }
+
         }
 
-        // Eliminar la tarea mediante la API.
-        btnEliminar.addEventListener('click', async function() {
-            if (!token) {
-                window.location.href = '/';
-                return;
-            }
 
-            if (!confirm('¿Realmente deseas eliminar esta tarea?')) {
+        // =========================================
+        // ELIMINAR TAREA - DELETE
+        // API: /api/tareas/<id>/
+        // =========================================
+
+        btnEliminar.addEventListener("click", async function() {
+
+            const confirmar = confirm(
+                "¿Estás seguro de que deseas eliminar esta tarea?"
+            );
+
+            if (!confirmar) {
                 return;
             }
 
             btnEliminar.disabled = true;
-            mensaje.textContent = 'Eliminando tarea...';
+            btnEliminar.textContent = "Eliminando...";
+
+            mostrarMensaje("Eliminando tarea...");
 
             try {
-                const respuesta = await fetch(`/api/tareas/${tareaId}/`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Token ${token}`
-                    }
-                });
 
-                if (respuesta.status === 401 || respuesta.status === 403) {
-                    sessionStorage.removeItem('token');
-                    window.location.href = '/';
+                const respuesta = await fetch(
+                    `/api/tareas/${tareaId}/`,
+                    {
+                        method: "DELETE",
+
+                        credentials: "same-origin",
+
+                        headers: {
+                            "X-CSRFToken": csrfToken,
+                            "Accept": "application/json"
+                        }
+                    }
+                );
+
+                if (respuesta.status === 401) {
+
+                    window.location.replace("/?expired=1");
                     return;
+
+                }
+
+                if (respuesta.status === 403) {
+
+                    throw new Error(
+                        "Acceso rechazado. Verifica tu sesión y el token CSRF."
+                    );
+
+                }
+
+                if (respuesta.status === 404) {
+
+                    throw new Error(
+                        "La tarea ya no existe o fue eliminada anteriormente."
+                    );
+
                 }
 
                 if (!respuesta.ok) {
+
                     throw new Error(
                         `No se pudo eliminar la tarea. HTTP ${respuesta.status}`
                     );
+
                 }
 
-                window.location.href = '/tareas/';
+                mostrarMensaje(
+                    "Tarea eliminada correctamente. Volviendo al listado..."
+                );
+
+                setTimeout(function() {
+
+                    window.location.href = "/tareas/";
+
+                }, 1000);
 
             } catch (error) {
-                console.error(error);
-                mensaje.textContent = error.message;
+
+                console.error("Error al eliminar:", error);
+
+                mostrarMensaje(error.message, true);
+
                 btnEliminar.disabled = false;
+                btnEliminar.textContent = "Sí, eliminar tarea";
+
             }
+
         });
 
+
+        // =========================================
+        // CARGA INICIAL
+        // =========================================
+
         cargarTarea();
+
     </script>
+
 </body>
 </html>

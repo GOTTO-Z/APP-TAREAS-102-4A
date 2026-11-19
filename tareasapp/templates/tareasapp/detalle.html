@@ -1,183 +1,328 @@
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle de tarea</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 30px;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #1e293b;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff, #bfdbfe);
+        }
+
+        .navbar {
+            padding: 20px 6%;
+            background: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.10);
+        }
+
+        .navbar h2 {
+            color: #1d4ed8;
         }
 
         .contenedor {
-            max-width: 650px;
-            margin: 30px auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 10px;
+            width: 90%;
+            max-width: 700px;
+            margin: 55px auto;
+        }
+
+        .panel {
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.10);
         }
 
         h1 {
-            text-align: center;
-            color: #333;
+            color: #1d4ed8;
+            margin-bottom: 10px;
+        }
+
+        .descripcion-panel {
+            color: #64748b;
+            margin-bottom: 25px;
         }
 
         .campo {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 6px;
+            margin: 18px 0;
+            padding: 17px;
+            background: #eff6ff;
+            border-radius: 9px;
+            border: 1px solid #dbeafe;
         }
 
         .etiqueta {
             display: block;
-            font-weight: bold;
+            font-weight: 700;
+            color: #1e40af;
             margin-bottom: 8px;
         }
 
         .valor {
+            display: block;
             overflow-wrap: anywhere;
+            line-height: 1.6;
+        }
+
+        .estado {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .completada {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .pendiente {
+            color: #92400e;
+            background: #fef3c7;
         }
 
         .botones {
             display: flex;
-            justify-content: center;
             gap: 12px;
             flex-wrap: wrap;
-            margin-top: 25px;
+            margin-top: 28px;
         }
 
         .boton {
             display: inline-block;
             padding: 12px 18px;
-            color: white;
+            border: none;
+            border-radius: 8px;
             text-decoration: none;
-            border-radius: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
         }
 
         .volver {
-            background-color: #333;
+            background: #dbeafe;
+            color: #1e40af;
         }
 
         .editar {
-            background-color: #0d6efd;
+            background: #2563eb;
+            color: white;
         }
 
-        #mensaje {
-            text-align: center;
+        .mensaje {
+            padding: 14px;
+            margin-top: 20px;
+            border-radius: 8px;
+            color: #1e40af;
+            background: #eff6ff;
+        }
+
+        .mensaje-error {
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        @media (max-width: 600px) {
+            .contenedor {
+                margin: 25px auto;
+            }
+
+            .panel {
+                padding: 23px;
+            }
         }
     </style>
 </head>
 
 <body>
+
+    <header class="navbar">
+        <h2>Gestión de tareas</h2>
+    </header>
+
     <main class="contenedor">
-        <h1>📋 Detalle de tarea</h1>
 
-        <p id="mensaje">Cargando información...</p>
+        <section class="panel">
 
-        <section id="datosTarea" hidden>
-            <div class="campo">
-                <span class="etiqueta">ID:</span>
-                <span id="id" class="valor"></span>
-            </div>
+            <h1>Detalle de tarea</h1>
 
-            <div class="campo">
-                <span class="etiqueta">Título:</span>
-                <span id="titulo" class="valor"></span>
-            </div>
+            <p class="descripcion-panel">
+                Información de la tarea registrada en la base de datos.
+            </p>
 
-            <div class="campo">
-                <span class="etiqueta">Descripción:</span>
-                <span id="descripcion" class="valor"></span>
-            </div>
+            <p id="mensaje" class="mensaje">
+                Cargando información...
+            </p>
 
-            <div class="campo">
-                <span class="etiqueta">Estado:</span>
-                <span id="estado" class="valor"></span>
-            </div>
+            <section id="datosTarea" hidden>
 
-            <div class="botones">
-                <a href="/tareas/" class="boton volver">
-                    Volver al listado
-                </a>
+                <div class="campo">
+                    <span class="etiqueta">ID:</span>
+                    <span id="id" class="valor"></span>
+                </div>
 
-                <a id="enlaceEditar" class="boton editar">
-                    Editar tarea
-                </a>
-            </div>
+                <div class="campo">
+                    <span class="etiqueta">Título:</span>
+                    <span id="titulo" class="valor"></span>
+                </div>
+
+                <div class="campo">
+                    <span class="etiqueta">Descripción:</span>
+                    <span id="descripcion" class="valor"></span>
+                </div>
+
+                <div class="campo">
+                    <span class="etiqueta">Estado:</span>
+                    <span id="estado" class="estado"></span>
+                </div>
+
+                <div class="botones">
+
+                    <a href="/tareas/" class="boton volver">
+                        Volver al listado
+                    </a>
+
+                    <a id="enlaceEditar" class="boton editar">
+                        Editar tarea
+                    </a>
+
+                </div>
+
+            </section>
+
         </section>
+
     </main>
 
     <script>
-        const token = sessionStorage.getItem('token');
 
-        // Obtener el ID desde la URL /detalle/5/
+        // ID proporcionado por la vista Django.
         const partesURL = window.location.pathname
-            .split('/')
-            .filter(Boolean);
+        .split("/")
+        .filter(Boolean);
 
-        const tareaId = partesURL[partesURL.length - 1];
+    const tareaId = partesURL[partesURL.length - 1];
 
-        const mensaje = document.getElementById('mensaje');
-        const datosTarea = document.getElementById('datosTarea');
+        const mensaje = document.getElementById("mensaje");
+        const datosTarea = document.getElementById("datosTarea");
+
+        // =========================================
+        // CONSULTAR DETALLE - GET
+        // API: /api/tareas/<id>/
+        // =========================================
 
         async function cargarDetalle() {
-            if (!token) {
-                window.location.href = '/';
-                return;
-            }
 
             try {
+
                 const respuesta = await fetch(
                     `/api/tareas/${tareaId}/`,
                     {
-                        method: 'GET',
+                        method: "GET",
+
+                        credentials: "same-origin",
+
                         headers: {
-                            'Authorization': `Token ${token}`
+                            "Accept": "application/json"
                         }
                     }
                 );
 
-                if (respuesta.status === 401 ||
-                    respuesta.status === 403) {
-                    sessionStorage.removeItem('token');
-                    window.location.href = '/';
+                // Sesión o JWT no válido.
+                if (respuesta.status === 401) {
+
+                    window.location.replace("/?expired=1");
                     return;
+
+                }
+
+                if (respuesta.status === 403) {
+
+                    throw new Error(
+                        "Acceso rechazado. Verifica tu sesión."
+                    );
+
+                }
+
+                if (respuesta.status === 404) {
+
+                    throw new Error(
+                        "La tarea solicitada no existe."
+                    );
+
                 }
 
                 if (!respuesta.ok) {
+
                     throw new Error(
-                        `No se pudo consultar la tarea. HTTP ${respuesta.status}`
+                        `Error al consultar la tarea. HTTP ${respuesta.status}`
                     );
+
                 }
 
                 const tarea = await respuesta.json();
 
-                document.getElementById('id').textContent = tarea.id;
-                document.getElementById('titulo').textContent = tarea.titulo;
-                document.getElementById('descripcion').textContent =
+                // Mostrar información.
+                document.getElementById("id").textContent = tarea.id;
+
+                document.getElementById("titulo").textContent =
+                    tarea.titulo;
+
+                document.getElementById("descripcion").textContent =
                     tarea.descripcion;
 
-                document.getElementById('estado').textContent =
-                    tarea.completada ? 'Completada' : 'Pendiente';
+                const estado = document.getElementById("estado");
 
-                document.getElementById('enlaceEditar').href =
+                if (tarea.completada) {
+
+                    estado.textContent = "Completada";
+                    estado.className = "estado completada";
+
+                } else {
+
+                    estado.textContent = "Pendiente";
+                    estado.className = "estado pendiente";
+
+                }
+
+                // Enlace a edición.
+                document.getElementById("enlaceEditar").href =
                     `/editar/${tarea.id}/`;
 
                 datosTarea.hidden = false;
-                mensaje.textContent = '';
+
+                mensaje.hidden = true;
 
             } catch (error) {
-                console.error(error);
+
+                console.error("Error al consultar tarea:", error);
+
                 mensaje.textContent = error.message;
+                mensaje.className = "mensaje mensaje-error";
+
             }
+
         }
 
+        // =========================================
+        // CARGA INICIAL
+        // =========================================
+
         cargarDetalle();
+
     </script>
+
 </body>
 </html>
